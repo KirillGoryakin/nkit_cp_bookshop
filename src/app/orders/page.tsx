@@ -19,7 +19,11 @@ export default function AddOrderPage() {
   return (
     <main className={clsx("p-4")}>
       <h1 className={clsx("text-4xl", "font-bold", "mb-4")}>Создать заказ</h1>
-      <AddOrderForm clients={clients} consultants={consultants} />
+      {clients.length > 0 && consultants.length > 0 ? (
+        <AddOrderForm clients={clients} consultants={consultants} />
+      ) : (
+        "Нет консультантов или клиентов"
+      )}
     </main>
   );
 }

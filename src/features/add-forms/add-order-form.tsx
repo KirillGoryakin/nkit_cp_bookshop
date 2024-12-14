@@ -17,8 +17,8 @@ export function AddOrderForm({
 }) {
   const [books, setBooks] = useState<BookResult[]>([]);
   const [order, setOrder] = useState<CreateOrderParams>({
-    Код_клиента: clients[0].Код_клиента.toString(),
-    Код_продавца: consultants[0].Код_продавца.toString(),
+    Код_клиента: clients?.[0].Код_клиента.toString(),
+    Код_продавца: consultants?.[0].Код_продавца.toString(),
     Состав: [],
   });
   const [message, setMessage] = useState("");

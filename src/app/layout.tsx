@@ -23,6 +23,8 @@ export default function RootLayout({
           <HeaderLink href="/publishers">Издательство</HeaderLink>
           <HeaderLink href="/clients">Клиенты</HeaderLink>
           <HeaderLink href="/consultants">Консультанты</HeaderLink>
+          <HeaderLink href="/orders">Заказы</HeaderLink>
+          <HeaderLink href="/orders/reports">Отчёт по Продажам</HeaderLink>
         </header>
         {children}
       </body>

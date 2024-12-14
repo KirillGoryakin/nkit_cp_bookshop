@@ -1,11 +1,16 @@
+'use client';
+
 import { AddAuthorForm } from '@/features/add-forms';
 import { DeleteAuthorButton } from '@/features/delete-buttons/delete-author-button';
-import { getAuthors } from '@/server-actions/get-authors';
+import { AuthorResult, getAuthors } from '@/server-actions/get-authors';
 import clsx from 'clsx';
+import { useEffect, useState } from 'react';
 
-export default async function AuthorsPage() {
-  const authors = await getAuthors();
-
+export default function AuthorsPage() {
+  const [authors, setAuthors] = useState<AuthorResult[]>([]);
+  useEffect(() => {
+    getAuthors().then(setAuthors);
+  }, []);
   return (
     <main className={clsx("p-4")}>
       <h1 className={clsx("text-4xl", "font-bold", "mb-4")}>Авторы</h1>

@@ -1,11 +1,16 @@
+'use client';
+
 import { AddClientForm } from '@/features/add-forms';
 import { DeleteClientButton } from '@/features/delete-buttons/delete-client-button';
-import { getClients } from '@/server-actions/get-client';
+import { ClientResult, getClients } from '@/server-actions/get-client';
 import clsx from 'clsx';
+import { useEffect, useState } from 'react';
 
-export default async function ClientsPage() {
-  const clients = await getClients();
-
+export default function ClientsPage() {
+  const [clients, setClients] = useState<ClientResult[]>([]);
+  useEffect(() => {
+    getClients().then(setClients);
+  }, []);
   return (
     <main className={clsx("p-4")}>
       <h1 className={clsx("text-4xl", "font-bold", "mb-4")}>Клиенты</h1>

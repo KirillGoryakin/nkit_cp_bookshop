@@ -1,11 +1,16 @@
-import { AddGenreForm } from '@/features/add-forms';
-import { DeleteGenreButton } from '@/features/delete-buttons/delete-genre-button';
-import { getGenres } from '@/server-actions/get-genres';
-import clsx from 'clsx';
+"use client";
 
-export default async function GenresPage() {
-  const genres = await getGenres();
+import { AddGenreForm } from "@/features/add-forms";
+import { DeleteGenreButton } from "@/features/delete-buttons/delete-genre-button";
+import { GenreResult, getGenres } from "@/server-actions/get-genres";
+import clsx from "clsx";
+import { useEffect, useState } from "react";
 
+export default function GenresPage() {
+  const [genres, setGenres] = useState<GenreResult[]>([]);
+  useEffect(() => {
+    getGenres().then(setGenres);
+  }, []);
   return (
     <main className={clsx("p-4")}>
       <h1 className={clsx("text-4xl", "font-bold", "mb-4")}>Жанры</h1>

@@ -1,11 +1,19 @@
-import { AddPublisherForm } from '@/features/add-forms/add-publisher-form';
-import { DeletePublisherButton } from '@/features/delete-buttons/delete-publisher-button';
-import { getPublishers } from '@/server-actions/get-publishers';
-import clsx from 'clsx';
+"use client";
 
-export default async function PublishersPage() {
-  const publishers = await getPublishers();
+import { AddPublisherForm } from "@/features/add-forms/add-publisher-form";
+import { DeletePublisherButton } from "@/features/delete-buttons/delete-publisher-button";
+import {
+  getPublishers,
+  PublisherResult,
+} from "@/server-actions/get-publishers";
+import clsx from "clsx";
+import { useEffect, useState } from "react";
 
+export default function PublishersPage() {
+  const [publishers, setPublishers] = useState<PublisherResult[]>([]);
+  useEffect(() => {
+    getPublishers().then(setPublishers);
+  }, []);
   return (
     <main className={clsx("p-4")}>
       <h1 className={clsx("text-4xl", "font-bold", "mb-4")}>Издательства</h1>

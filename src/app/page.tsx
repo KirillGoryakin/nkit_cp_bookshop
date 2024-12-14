@@ -1,18 +1,26 @@
-import { AddBookForm } from "@/features/add-forms";
-import { DeleteBookButton } from '@/features/delete-buttons/delete-book-button';
-import { getAuthors } from "@/server-actions/get-authors";
-import { getBooks } from "@/server-actions/get-books";
-import { getGenres } from "@/server-actions/get-genres";
-import { getPublishers } from "@/server-actions/get-publishers";
-import clsx from "clsx";
+"use client";
 
-export default async function Home() {
-  const [books, authors, genres, publishers] = await Promise.all([
-    getBooks(),
-    getAuthors(),
-    getGenres(),
-    getPublishers(),
-  ]);
+import { AddBookForm } from "@/features/add-forms";
+import { DeleteBookButton } from "@/features/delete-buttons/delete-book-button";
+import { AuthorResult, getAuthors } from "@/server-actions/get-authors";
+import { BookResult, getBooks } from "@/server-actions/get-books";
+import { GenreResult, getGenres } from "@/server-actions/get-genres";
+import {
+  getPublishers,
+  PublisherResult,
+} from "@/server-actions/get-publishers";
+import clsx from "clsx";
+import { useEffect, useState } from "react";
+
+export default function Home() {
+  const [[books, authors, genres, publishers], setState] = useState<
+    [BookResult[], AuthorResult[], GenreResult[], PublisherResult[]]
+  >([[], [], [], []]);
+  useEffect(() => {
+    Promise.all([getBooks(), getAuthors(), getGenres(), getPublishers()]).then(
+      setState
+    );
+  }, []);
   return (
     <main className={clsx("p-4")}>
       <h1 className={clsx("text-4xl", "font-bold", "mb-4")}>Книги</h1>

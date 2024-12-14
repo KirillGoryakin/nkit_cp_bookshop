@@ -1,8 +1,17 @@
-import { getSalesReport } from '@/server-actions/get-sales-report';
-import clsx from 'clsx';
+"use client";
 
-export default async function SalesReportPage() {
-  const report = await getSalesReport();
+import {
+  getSalesReport,
+  ReportResult,
+} from "@/server-actions/get-sales-report";
+import clsx from "clsx";
+import { useEffect, useState } from "react";
+
+export default function SalesReportPage() {
+  const [report, setReport] = useState<ReportResult[]>([]);
+  useEffect(() => {
+    getSalesReport().then(setReport);
+  }, []);
   return (
     <main className={clsx("p-4")}>
       <h1 className={clsx("text-4xl", "font-bold", "mb-4")}>

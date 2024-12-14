@@ -1,10 +1,19 @@
-import { AddConsultantForm } from '@/features/add-forms';
-import { DeleteConsultantButton } from '@/features/delete-buttons/delete-consultant-button';
-import { getConsultants } from '@/server-actions/get-consultants';
-import clsx from 'clsx';
+"use client";
 
-export default async function ConsultantsPage() {
-  const consultants = await getConsultants();
+import { AddConsultantForm } from "@/features/add-forms";
+import { DeleteConsultantButton } from "@/features/delete-buttons/delete-consultant-button";
+import {
+  ConsultantResult,
+  getConsultants,
+} from "@/server-actions/get-consultants";
+import clsx from "clsx";
+import { useEffect, useState } from "react";
+
+export default function ConsultantsPage() {
+  const [consultants, setConsultants] = useState<ConsultantResult[]>([]);
+  useEffect(() => {
+    getConsultants().then(setConsultants);
+  }, []);
   return (
     <main className={clsx("p-4")}>
       <h1 className={clsx("text-4xl", "font-bold", "mb-4")}>Консультанты</h1>

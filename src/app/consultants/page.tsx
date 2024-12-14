@@ -5,7 +5,6 @@ import clsx from 'clsx';
 
 export default async function ConsultantsPage() {
   const consultants = await getConsultants();
-console.log(consultants);
   return (
     <main className={clsx("p-4")}>
       <h1 className={clsx("text-4xl", "font-bold", "mb-4")}>Консультанты</h1>

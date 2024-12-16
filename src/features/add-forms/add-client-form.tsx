@@ -1,14 +1,17 @@
 "use client";
 
 import { ChangeEvent, FormEvent, useState } from "react";
-import { useRouter } from 'next/navigation';
 import { addClient } from '@/server-actions/add-client';
 import { Button, Input } from '@/components/form';
 import clsx from 'clsx';
 
-export function AddClientForm({ className }: { className?: string }) {
-  const { refresh } = useRouter();
-
+export function AddClientForm({
+  className,
+  cb,
+}: {
+  className?: string;
+  cb?: () => void | Promise<void>;
+}) {
   const [form, setForm] = useState({ ФИО: "", Адрес: "", Телефон: "" });
   const [message, setMessage] = useState("");
 
@@ -22,7 +25,7 @@ export function AddClientForm({ className }: { className?: string }) {
     const response = await addClient(form);
     if (response.success) {
       setForm({ ФИО: "", Адрес: "", Телефон: "" });
-      refresh();
+      cb?.();
     } else {
       setMessage(response.error || "Произошла ошибка");
     }

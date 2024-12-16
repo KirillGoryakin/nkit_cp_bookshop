@@ -7,17 +7,20 @@ import {
   getConsultants,
 } from "@/server-actions/get-consultants";
 import clsx from "clsx";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export default function ConsultantsPage() {
   const [consultants, setConsultants] = useState<ConsultantResult[]>([]);
-  useEffect(() => {
+  const refresh = useCallback(() => {
     getConsultants().then(setConsultants);
   }, []);
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
   return (
     <main className={clsx("p-4")}>
       <h1 className={clsx("text-4xl", "font-bold", "mb-4")}>Консультанты</h1>
-      <AddConsultantForm className={clsx("mb-4")} />
+      <AddConsultantForm className={clsx("mb-4")} cb={refresh} />
       <h1 className={clsx("text-lg", "font-bold", "mb-4")}>
         Список консультантов
       </h1>
@@ -58,6 +61,7 @@ export default function ConsultantsPage() {
                 <td>
                   <DeleteConsultantButton
                     id={consultant.Код_продавца.toString()}
+                    cb={refresh}
                   />
                 </td>
               </tr>

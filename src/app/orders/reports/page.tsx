@@ -1,5 +1,6 @@
 "use client";
 
+import { Input } from '@/components/form';
 import {
   getSalesReport,
   ReportResult,
@@ -9,14 +10,35 @@ import { useEffect, useState } from "react";
 
 export default function SalesReportPage() {
   const [report, setReport] = useState<ReportResult[]>([]);
+  const [start, setStart] = useState(new Date().toISOString().split('T')[0]);
+  const [end, setEnd] = useState(new Date().toISOString().split('T')[0]);
   useEffect(() => {
-    getSalesReport().then(setReport);
-  }, []);
+    getSalesReport({ start, end }).then(setReport);
+  }, [start, end]);
   return (
     <main className={clsx("p-4")}>
       <h1 className={clsx("text-4xl", "font-bold", "mb-4")}>
         Отчёт по Продажам
       </h1>
+      <div className={clsx("mb-4")}>
+        <label>
+          Начало{" "}
+          <Input
+            type="date"
+            value={start}
+            onChange={(e) => setStart(e.target.value)}
+          />
+        </label>
+        <span> &mdash; </span>
+        <label>
+          Конец{" "}
+          <Input
+            type="date"
+            value={end}
+            onChange={(e) => setEnd(e.target.value)}
+          />
+        </label>
+      </div>
       <table
         cellPadding="10"
         className={clsx(

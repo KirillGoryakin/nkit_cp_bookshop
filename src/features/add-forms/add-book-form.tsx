@@ -6,7 +6,6 @@ import { AuthorResult } from "@/server-actions/get-authors";
 import { GenreResult } from "@/server-actions/get-genres";
 import { PublisherResult } from "@/server-actions/get-publishers";
 import clsx from "clsx";
-import { useRouter } from "next/navigation";
 import { ChangeEvent, FormEvent, useState } from "react";
 
 export function AddBookForm({
@@ -14,14 +13,14 @@ export function AddBookForm({
   authors,
   genres,
   publishers,
+  cb,
 }: {
   className?: string;
   authors: AuthorResult[];
   genres: GenreResult[];
   publishers: PublisherResult[];
+  cb?: () => void | Promise<void>;
 }) {
-  const { refresh } = useRouter();
-
   const [form, setForm] = useState({
     Наименование: "",
     Год_издания: "",
@@ -54,7 +53,7 @@ export function AddBookForm({
         Стоимость: "",
       });
 
-      refresh();
+      cb?.();
     } else {
       setMessage(response.error || "Произошла ошибка");
     }

@@ -1,14 +1,17 @@
 "use client";
 
 import { ChangeEvent, FormEvent, useState } from "react";
-import { useRouter } from "next/navigation";
 import { addConsultant } from "@/server-actions/add-consultant";
 import clsx from "clsx";
 import { Button, Input } from '@/components/form';
 
-export function AddConsultantForm({ className }: { className?: string }) {
-  const { refresh } = useRouter();
-
+export function AddConsultantForm({
+  className,
+  cb,
+}: {
+  className?: string;
+  cb?: () => void | Promise<void>;
+}) {
   const [form, setForm] = useState({
     ФИО: "",
     Адрес: "",
@@ -34,7 +37,7 @@ export function AddConsultantForm({ className }: { className?: string }) {
         Зарплата: "",
         Администратор: false,
       });
-      refresh();
+      cb?.();
     } else {
       setMessage(response.error || "Произошла ошибка");
     }

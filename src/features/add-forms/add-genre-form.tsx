@@ -3,12 +3,15 @@
 import { Button, Input } from '@/components/form';
 import { addGenre } from '@/server-actions/add-genre';
 import clsx from 'clsx';
-import { useRouter } from 'next/navigation';
 import { FormEvent, useState } from "react";
 
-export function AddGenreForm({ className }: { className?: string }) {
-  const { refresh } = useRouter();
-
+export function AddGenreForm({
+  className,
+  cb,
+}: {
+  className?: string;
+  cb?: () => void | Promise<void>;
+}) {
   const [Наименование, setНаименование] = useState("");
   const [message, setMessage] = useState("");
 
@@ -17,7 +20,7 @@ export function AddGenreForm({ className }: { className?: string }) {
     const response = await addGenre({ Наименование });
     if (response.success) {
       setНаименование("");
-      refresh();
+      cb?.();
     } else {
       setMessage(response.error || "Произошла ошибка");
     }

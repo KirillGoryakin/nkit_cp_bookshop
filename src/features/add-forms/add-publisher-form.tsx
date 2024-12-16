@@ -3,12 +3,15 @@
 import { Button, Input } from '@/components/form';
 import { addPublisher } from '@/server-actions/add-publisher';
 import clsx from 'clsx';
-import { useRouter } from 'next/navigation';
 import { FormEvent, useState } from "react";
 
-export function AddPublisherForm({ className }: { className?: string }) {
-  const { refresh } = useRouter();
-
+export function AddPublisherForm({
+  className,
+  cb,
+}: {
+  className?: string;
+  cb?: () => void | Promise<void>;
+}) {
   const [Наименование, setНаименование] = useState("");
   const [Город, setГород] = useState("");
   const [message, setMessage] = useState("");
@@ -19,7 +22,7 @@ export function AddPublisherForm({ className }: { className?: string }) {
     if (response.success) {
       setНаименование("");
       setГород("");
-      refresh();
+      cb?.();
     } else {
       setMessage(response.error || "Произошла ошибка");
     }

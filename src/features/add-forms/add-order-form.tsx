@@ -150,11 +150,14 @@ export function AddOrderForm({
           </tbody>
         </table>
         <h2 className={clsx("text-xl", "font-bold", "mt-4")}>Состав заказа</h2>
-        <ul className={clsx("list-disc", "pl-4", 'py-4')}>
+        <ul className={clsx("list-disc", "pl-4", "py-4")}>
           {order.Состав.map((item) => (
             <li key={item.Код_книги}>
               <b>
-                {books.find((b) => b.Код_книги === +item.Код_книги)?.Наименование}
+                {
+                  books.find((b) => b.Код_книги === +item.Код_книги)
+                    ?.Наименование
+                }
               </b>
               , Количество: {item.Количество}, Сумма:{" "}
               {item.Количество * item.Стоимость} ₽
@@ -174,6 +177,11 @@ export function AddOrderForm({
             </li>
           ))}
         </ul>
+        <div>
+          Итог:{" "}
+          {order.Состав.reduce((sum, i) => i.Стоимость * i.Количество + sum, 0)}{" "}
+          ₽
+        </div>
         <Button type="submit">Создать заказ</Button>
       </form>
     </div>

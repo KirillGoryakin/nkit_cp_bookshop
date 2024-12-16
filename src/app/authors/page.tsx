@@ -4,17 +4,20 @@ import { AddAuthorForm } from '@/features/add-forms';
 import { DeleteAuthorButton } from '@/features/delete-buttons/delete-author-button';
 import { AuthorResult, getAuthors } from '@/server-actions/get-authors';
 import clsx from 'clsx';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export default function AuthorsPage() {
   const [authors, setAuthors] = useState<AuthorResult[]>([]);
-  useEffect(() => {
+  const refresh = useCallback(() => {
     getAuthors().then(setAuthors);
   }, []);
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
   return (
     <main className={clsx("p-4")}>
       <h1 className={clsx("text-4xl", "font-bold", "mb-4")}>Авторы</h1>
-      <AddAuthorForm className={clsx("mb-4")} />
+      <AddAuthorForm className={clsx("mb-4")} cb={refresh} />
       <h1 className={clsx("text-lg", "font-bold", "mb-4")}>Список авторов</h1>
       <table
         cellPadding="10"
@@ -43,7 +46,10 @@ export default function AuthorsPage() {
                 <td>{author.Код_автора}</td>
                 <td>{author.ФИО}</td>
                 <td>
-                  <DeleteAuthorButton id={author.Код_автора.toString()} />
+                  <DeleteAuthorButton
+                    id={author.Код_автора.toString()}
+                    cb={refresh}
+                  />
                 </td>
               </tr>
             ))}

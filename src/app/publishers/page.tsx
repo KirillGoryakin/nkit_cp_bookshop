@@ -7,17 +7,20 @@ import {
   PublisherResult,
 } from "@/server-actions/get-publishers";
 import clsx from "clsx";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export default function PublishersPage() {
   const [publishers, setPublishers] = useState<PublisherResult[]>([]);
-  useEffect(() => {
+  const refresh = useCallback(() => {
     getPublishers().then(setPublishers);
   }, []);
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
   return (
     <main className={clsx("p-4")}>
       <h1 className={clsx("text-4xl", "font-bold", "mb-4")}>Издательства</h1>
-      <AddPublisherForm className={clsx("mb-4")} />
+      <AddPublisherForm className={clsx("mb-4")} cb={refresh} />
       <h1 className={clsx("text-lg", "font-bold", "mb-4")}>
         Список издательств
       </h1>
@@ -52,6 +55,7 @@ export default function PublishersPage() {
                 <td>
                   <DeletePublisherButton
                     id={publisher.Код_издательства.toString()}
+                    cb={refresh}
                   />
                 </td>
               </tr>

@@ -4,17 +4,18 @@ import { AddGenreForm } from "@/features/add-forms";
 import { DeleteGenreButton } from "@/features/delete-buttons/delete-genre-button";
 import { GenreResult, getGenres } from "@/server-actions/get-genres";
 import clsx from "clsx";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export default function GenresPage() {
   const [genres, setGenres] = useState<GenreResult[]>([]);
+  const refresh = useCallback(() => {getGenres().then(setGenres);}, []);
   useEffect(() => {
-    getGenres().then(setGenres);
-  }, []);
+    refresh();
+  }, [refresh]);
   return (
     <main className={clsx("p-4")}>
       <h1 className={clsx("text-4xl", "font-bold", "mb-4")}>Жанры</h1>
-      <AddGenreForm className={clsx("mb-4")} />
+      <AddGenreForm className={clsx("mb-4")} cb={refresh} />
       <h1 className={clsx("text-lg", "font-bold", "mb-4")}>Список жанров</h1>
       <table
         cellPadding="10"
@@ -43,7 +44,10 @@ export default function GenresPage() {
                 <td>{genre.Код_жанра}</td>
                 <td>{genre.Наименование}</td>
                 <td>
-                  <DeleteGenreButton id={genre.Код_жанра.toString()} />
+                  <DeleteGenreButton
+                    id={genre.Код_жанра.toString()}
+                    cb={refresh}
+                  />
                 </td>
               </tr>
             ))}

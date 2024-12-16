@@ -10,17 +10,25 @@ import {
   PublisherResult,
 } from "@/server-actions/get-publishers";
 import clsx from "clsx";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export default function Home() {
   const [[books, authors, genres, publishers], setState] = useState<
     [BookResult[], AuthorResult[], GenreResult[], PublisherResult[]]
   >([[], [], [], []]);
+  const refresh = useCallback(
+    () =>
+      Promise.all([
+        getBooks(),
+        getAuthors(),
+        getGenres(),
+        getPublishers(),
+      ]).then(setState),
+    []
+  );
   useEffect(() => {
-    Promise.all([getBooks(), getAuthors(), getGenres(), getPublishers()]).then(
-      setState
-    );
-  }, []);
+    refresh();
+  }, [refresh]);
   return (
     <main className={clsx("p-4")}>
       <h1 className={clsx("text-4xl", "font-bold", "mb-4")}>Книги</h1>
@@ -29,6 +37,7 @@ export default function Home() {
         authors={authors}
         genres={genres}
         publishers={publishers}
+        cb={refresh}
       />
       <h1 className={clsx("text-lg", "font-bold", "mb-4")}>Каталог книг</h1>
       <table
@@ -70,7 +79,10 @@ export default function Home() {
                 <td>{book.Количество_на_складе}</td>
                 <td>{book.Стоимость} ₽</td>
                 <td>
-                  <DeleteBookButton id={book.Код_книги.toString()} />
+                  <DeleteBookButton
+                    id={book.Код_книги.toString()}
+                    cb={refresh}
+                  />
                 </td>
               </tr>
             ))}

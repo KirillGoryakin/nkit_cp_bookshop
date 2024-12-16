@@ -4,17 +4,18 @@ import { AddClientForm } from '@/features/add-forms';
 import { DeleteClientButton } from '@/features/delete-buttons/delete-client-button';
 import { ClientResult, getClients } from '@/server-actions/get-client';
 import clsx from 'clsx';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export default function ClientsPage() {
   const [clients, setClients] = useState<ClientResult[]>([]);
+  const refresh = useCallback(() => {getClients().then(setClients)}, []);
   useEffect(() => {
-    getClients().then(setClients);
-  }, []);
+    refresh();
+  }, [refresh]);
   return (
     <main className={clsx("p-4")}>
       <h1 className={clsx("text-4xl", "font-bold", "mb-4")}>Клиенты</h1>
-      <AddClientForm className={clsx("mb-4")} />
+      <AddClientForm className={clsx("mb-4")} cb={refresh} />
       <h1 className={clsx("text-lg", "font-bold", "mb-4")}>Список клиентов</h1>
       <table
         cellPadding="10"
@@ -47,7 +48,10 @@ export default function ClientsPage() {
                 <td>{client.Адрес}</td>
                 <td>{client.Телефон}</td>
                 <td>
-                  <DeleteClientButton id={client.Код_клиента.toString()} />
+                  <DeleteClientButton
+                    id={client.Код_клиента.toString()}
+                    cb={refresh}
+                  />
                 </td>
               </tr>
             ))}

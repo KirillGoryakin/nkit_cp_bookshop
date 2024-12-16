@@ -3,12 +3,9 @@
 import { Button, Input } from "@/components/form";
 import { addAuthor } from "@/server-actions/add-author";
 import clsx from "clsx";
-import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 
-export function AddAuthorForm({ className }: { className?: string }) {
-  const { refresh } = useRouter();
-
+export function AddAuthorForm({ className, cb }: { className?: string; cb?: () => void | Promise<void> }) {
   const [ФИО, setФИО] = useState("");
   const [message, setMessage] = useState("");
 
@@ -17,7 +14,7 @@ export function AddAuthorForm({ className }: { className?: string }) {
     const response = await addAuthor({ ФИО });
     if (response.success) {
       setФИО("");
-      refresh();
+      cb?.();
     } else {
       setMessage(response.error || "Произошла ошибка");
     }

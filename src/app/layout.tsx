@@ -16,15 +16,19 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <body>
-        <header className={clsx("flex", "gap-2", "p-4")}>
-          <HeaderLink href="/">Книги</HeaderLink>
-          <HeaderLink href="/authors">Авторы</HeaderLink>
-          <HeaderLink href="/genres">Жанры</HeaderLink>
-          <HeaderLink href="/publishers">Издательство</HeaderLink>
-          <HeaderLink href="/clients">Клиенты</HeaderLink>
-          <HeaderLink href="/consultants">Консультанты</HeaderLink>
-          <HeaderLink href="/orders">Заказы</HeaderLink>
-          <HeaderLink href="/orders/reports">Отчёт по Продажам</HeaderLink>
+        <header className={clsx("p-4")}>
+          <div className={clsx("flex", "gap-2")}>
+            <HeaderLink href="/">Книги</HeaderLink>
+            <HeaderLink href="/authors">Авторы</HeaderLink>
+            <HeaderLink href="/genres">Жанры</HeaderLink>
+            <HeaderLink href="/publishers">Издательство</HeaderLink>
+            <HeaderLink href="/clients">Клиенты</HeaderLink>
+            <HeaderLink href="/consultants">Консультанты</HeaderLink>
+            <HeaderLink href="/orders">Заказы</HeaderLink>
+          </div>
+          <div className={clsx("flex", "gap-2", 'mt-2')}>
+            <HeaderLink href="/orders/reports">Отчёт по Продажам</HeaderLink>
+          </div>
         </header>
         {children}
       </body>

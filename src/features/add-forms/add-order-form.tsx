@@ -183,8 +183,24 @@ export function AddOrderForm({
                     ?.Наименование
                 }
               </b>
-              , Количество: {item.Количество}, Сумма:{" "}
-              {item.Количество * item.Стоимость} ₽
+              , Количество:{" "}
+              <Input
+                type="number"
+                value={item.Количество}
+                min={1}
+                max={1000}
+                onChange={(e) =>
+                  setOrder((prevOrder) => ({
+                    ...prevOrder,
+                    Состав: prevOrder.Состав.map((i) =>
+                      i.Код_книги === item.Код_книги
+                        ? { ...i, Количество: +e.target.value }
+                        : i
+                    ),
+                  }))
+                }
+              />
+              , Сумма: {item.Количество * item.Стоимость} ₽
               <Button
                 className={clsx("ml-4")}
                 onClick={() =>

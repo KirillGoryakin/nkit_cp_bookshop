@@ -1,15 +1,21 @@
-'use client';
+"use client";
 
-import { AddAuthorForm } from '@/features/add-forms';
-import { DeleteAuthorButton } from '@/features/delete-buttons/delete-author-button';
-import { AuthorResult, getAuthors } from '@/server-actions/get-authors';
-import clsx from 'clsx';
-import { useCallback, useEffect, useState } from 'react';
+import { Input } from '@/components/form';
+import { AddAuthorForm } from "@/features/add-forms";
+import { DeleteAuthorButton } from "@/features/delete-buttons/delete-author-button";
+import { AuthorResult, getAuthors } from "@/server-actions/get-authors";
+import clsx from "clsx";
+import { useCallback, useEffect, useState } from "react";
 
 export default function AuthorsPage() {
   const [authors, setAuthors] = useState<AuthorResult[]>([]);
+  const [authorsToDisplay, setAuthorsToDisplay] =
+    useState<AuthorResult[]>(authors);
   const refresh = useCallback(() => {
-    getAuthors().then(setAuthors);
+    getAuthors().then((data) => {
+      setAuthors(data);
+      setAuthorsToDisplay([...data].sort((a, b) => b.Код_автора - a.Код_автора));
+    });
   }, []);
   useEffect(() => {
     refresh();
@@ -19,6 +25,28 @@ export default function AuthorsPage() {
       <h1 className={clsx("text-4xl", "font-bold", "mb-4")}>Авторы</h1>
       <AddAuthorForm className={clsx("mb-4")} cb={refresh} />
       <h1 className={clsx("text-lg", "font-bold", "mb-4")}>Список авторов</h1>
+      <div className={clsx("mb-4")}>
+        Поиск по ФИО:{" "}
+        <Input
+          type="text"
+          onChange={(e) => {
+            const sorted = [...authors].sort(
+              (a, b) => b.Код_автора - a.Код_автора
+            );
+            if (e.target.value) {
+              setAuthorsToDisplay(
+                sorted.filter((b) =>
+                  b.ФИО
+                    .toLocaleLowerCase()
+                    .includes(e.target.value.toLocaleLowerCase())
+                )
+              );
+            } else {
+              setAuthorsToDisplay(sorted);
+            }
+          }}
+        />
+      </div>
       <table
         cellPadding="10"
         className={clsx(
@@ -39,20 +67,18 @@ export default function AuthorsPage() {
           </tr>
         </thead>
         <tbody>
-          {[...authors]
-            .sort((a, b) => b.Код_автора - a.Код_автора)
-            .map((author) => (
-              <tr key={author.Код_автора}>
-                <td>{author.Код_автора}</td>
-                <td>{author.ФИО}</td>
-                <td>
-                  <DeleteAuthorButton
-                    id={author.Код_автора.toString()}
-                    cb={refresh}
-                  />
-                </td>
-              </tr>
-            ))}
+          {authorsToDisplay.map((author) => (
+            <tr key={author.Код_автора}>
+              <td>{author.Код_автора}</td>
+              <td>{author.ФИО}</td>
+              <td>
+                <DeleteAuthorButton
+                  id={author.Код_автора.toString()}
+                  cb={refresh}
+                />
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </main>

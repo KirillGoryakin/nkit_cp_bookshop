@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Select } from "@/components/form";
+import { Button, Input, Select } from "@/components/form";
 import { createOrder, CreateOrderParams } from "@/server-actions/create-order";
 import { BookResult, getBooks } from "@/server-actions/get-books";
 import { ClientResult } from "@/server-actions/get-client";
@@ -16,6 +16,7 @@ export function AddOrderForm({
   consultants: ConsultantResult[];
 }) {
   const [books, setBooks] = useState<BookResult[]>([]);
+  const [booksToDisplay, setBooksToDisplay] = useState<BookResult[]>([]);
   const [order, setOrder] = useState<CreateOrderParams>({
     Код_клиента: clients?.[0].Код_клиента.toString(),
     Код_продавца: consultants?.[0].Код_продавца.toString(),
@@ -27,6 +28,7 @@ export function AddOrderForm({
     async function fetchBooks() {
       const books = await getBooks();
       setBooks(books);
+      setBooksToDisplay([...books].sort((a, b) => b.Код_книги - a.Код_книги));
     }
     fetchBooks();
   }, []);
@@ -109,6 +111,28 @@ export function AddOrderForm({
           </label>
         </div>
         <h2 className={clsx("text-xl", "font-bold", "mt-4")}>Добавить книги</h2>
+        <div className={clsx("mb-4")}>
+          Поиск по наименованию:{" "}
+          <Input
+            type="text"
+            onChange={(e) => {
+              const sorted = [...books].sort(
+                (a, b) => b.Код_книги - a.Код_книги
+              );
+              if (e.target.value) {
+                setBooksToDisplay(
+                  sorted.filter((b) =>
+                    b.Наименование
+                      .toLocaleLowerCase()
+                      .includes(e.target.value.toLocaleLowerCase())
+                  )
+                );
+              } else {
+                setBooksToDisplay(sorted);
+              }
+            }}
+          />
+        </div>
         <table
           cellPadding="10"
           className={clsx(
@@ -131,7 +155,7 @@ export function AddOrderForm({
             </tr>
           </thead>
           <tbody>
-            {books.map((book) => (
+            {booksToDisplay.map((book) => (
               <tr key={book.Код_книги}>
                 <td>{book.Код_книги}</td>
                 <td>{book.Наименование}</td>

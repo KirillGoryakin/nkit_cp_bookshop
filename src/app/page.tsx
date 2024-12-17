@@ -1,5 +1,6 @@
 "use client";
 
+import { Input } from "@/components/form";
 import { AddBookForm } from "@/features/add-forms";
 import { DeleteBookButton } from "@/features/delete-buttons/delete-book-button";
 import { AuthorResult, getAuthors } from "@/server-actions/get-authors";
@@ -16,6 +17,7 @@ export default function Home() {
   const [[books, authors, genres, publishers], setState] = useState<
     [BookResult[], AuthorResult[], GenreResult[], PublisherResult[]]
   >([[], [], [], []]);
+  const [booksToDisplay, setBooksToDisplay] = useState<BookResult[]>(books);
   const refresh = useCallback(
     () =>
       Promise.all([
@@ -23,7 +25,12 @@ export default function Home() {
         getAuthors(),
         getGenres(),
         getPublishers(),
-      ]).then(setState),
+      ]).then((data) => {
+        setState(data);
+        setBooksToDisplay(
+          [...data[0]].sort((a, b) => b.Код_книги - a.Код_книги)
+        );
+      }),
     []
   );
   useEffect(() => {
@@ -40,6 +47,26 @@ export default function Home() {
         cb={refresh}
       />
       <h1 className={clsx("text-lg", "font-bold", "mb-4")}>Каталог книг</h1>
+      <div className={clsx('mb-4')}>
+        Поиск по наименованию:{" "}
+        <Input
+          type="text"
+          onChange={(e) => {
+            const sorted = [...books].sort((a, b) => b.Код_книги - a.Код_книги);
+            if (e.target.value) {
+              setBooksToDisplay(
+                sorted.filter((b) =>
+                  b.Наименование
+                    .toLocaleLowerCase()
+                    .includes(e.target.value.toLocaleLowerCase())
+                )
+              );
+            } else {
+              setBooksToDisplay(sorted);
+            }
+          }}
+        />
+      </div>
       <table
         cellPadding="10"
         className={clsx(
@@ -66,26 +93,21 @@ export default function Home() {
           </tr>
         </thead>
         <tbody>
-          {[...books]
-            .sort((a, b) => b.Код_книги - a.Код_книги)
-            .map((book) => (
-              <tr key={book.Код_книги}>
-                <td>{book.Код_книги}</td>
-                <td>{book.Наименование}</td>
-                <td>{book.Год_издания}</td>
-                <td>{book.Автор}</td>
-                <td>{book.Жанр}</td>
-                <td>{book.Издательство}</td>
-                <td>{book.Количество_на_складе}</td>
-                <td>{book.Стоимость} ₽</td>
-                <td>
-                  <DeleteBookButton
-                    id={book.Код_книги.toString()}
-                    cb={refresh}
-                  />
-                </td>
-              </tr>
-            ))}
+          {booksToDisplay.map((book) => (
+            <tr key={book.Код_книги}>
+              <td>{book.Код_книги}</td>
+              <td>{book.Наименование}</td>
+              <td>{book.Год_издания}</td>
+              <td>{book.Автор}</td>
+              <td>{book.Жанр}</td>
+              <td>{book.Издательство}</td>
+              <td>{book.Количество_на_складе}</td>
+              <td>{book.Стоимость} ₽</td>
+              <td>
+                <DeleteBookButton id={book.Код_книги.toString()} cb={refresh} />
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </main>

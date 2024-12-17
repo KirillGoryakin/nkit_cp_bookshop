@@ -1,5 +1,6 @@
 "use client";
 
+import { Input } from "@/components/form";
 import { AddConsultantForm } from "@/features/add-forms";
 import { DeleteConsultantButton } from "@/features/delete-buttons/delete-consultant-button";
 import {
@@ -11,8 +12,15 @@ import { useCallback, useEffect, useState } from "react";
 
 export default function ConsultantsPage() {
   const [consultants, setConsultants] = useState<ConsultantResult[]>([]);
+  const [consultantsToDisplay, setConsultantsToDisplay] =
+    useState<ConsultantResult[]>(consultants);
   const refresh = useCallback(() => {
-    getConsultants().then(setConsultants);
+    getConsultants().then((data) => {
+      setConsultants(data);
+      setConsultantsToDisplay(
+        [...data].sort((a, b) => b.Код_продавца - a.Код_продавца)
+      );
+    });
   }, []);
   useEffect(() => {
     refresh();
@@ -24,6 +32,28 @@ export default function ConsultantsPage() {
       <h1 className={clsx("text-lg", "font-bold", "mb-4")}>
         Список консультантов
       </h1>
+      <div className={clsx("mb-4")}>
+        Поиск по ФИО:{" "}
+        <Input
+          type="text"
+          onChange={(e) => {
+            const sorted = [...consultants].sort(
+              (a, b) => b.Код_продавца - a.Код_продавца
+            );
+            if (e.target.value) {
+              setConsultantsToDisplay(
+                sorted.filter((b) =>
+                  b.ФИО
+                    .toLocaleLowerCase()
+                    .includes(e.target.value.toLocaleLowerCase())
+                )
+              );
+            } else {
+              setConsultantsToDisplay(sorted);
+            }
+          }}
+        />
+      </div>
       <table
         cellPadding="10"
         className={clsx(
@@ -48,24 +78,22 @@ export default function ConsultantsPage() {
           </tr>
         </thead>
         <tbody>
-          {[...consultants]
-            .sort((a, b) => b.Код_продавца - a.Код_продавца)
-            .map((consultant) => (
-              <tr key={consultant.Код_продавца}>
-                <td>{consultant.Код_продавца}</td>
-                <td>{consultant.ФИО}</td>
-                <td>{consultant.Адрес}</td>
-                <td>{consultant.Телефон}</td>
-                <td>{consultant.Зарплата} ₽</td>
-                <td>{consultant.Администратор ? "Да" : "Нет"}</td>
-                <td>
-                  <DeleteConsultantButton
-                    id={consultant.Код_продавца.toString()}
-                    cb={refresh}
-                  />
-                </td>
-              </tr>
-            ))}
+          {consultantsToDisplay.map((consultant) => (
+            <tr key={consultant.Код_продавца}>
+              <td>{consultant.Код_продавца}</td>
+              <td>{consultant.ФИО}</td>
+              <td>{consultant.Адрес}</td>
+              <td>{consultant.Телефон}</td>
+              <td>{consultant.Зарплата} ₽</td>
+              <td>{consultant.Администратор ? "Да" : "Нет"}</td>
+              <td>
+                <DeleteConsultantButton
+                  id={consultant.Код_продавца.toString()}
+                  cb={refresh}
+                />
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </main>

@@ -1,5 +1,6 @@
 "use client";
 
+import { Input } from '@/components/form';
 import { AddPublisherForm } from "@/features/add-forms/add-publisher-form";
 import { DeletePublisherButton } from "@/features/delete-buttons/delete-publisher-button";
 import {
@@ -11,8 +12,15 @@ import { useCallback, useEffect, useState } from "react";
 
 export default function PublishersPage() {
   const [publishers, setPublishers] = useState<PublisherResult[]>([]);
+  const [publishersToDisplay, setPublishersToDisplay] =
+    useState<PublisherResult[]>(publishers);
   const refresh = useCallback(() => {
-    getPublishers().then(setPublishers);
+    getPublishers().then((data) => {
+      setPublishers(data);
+      setPublishersToDisplay(
+        [...data].sort((a, b) => b.Код_издательства - a.Код_издательства)
+      );
+    });
   }, []);
   useEffect(() => {
     refresh();
@@ -24,6 +32,28 @@ export default function PublishersPage() {
       <h1 className={clsx("text-lg", "font-bold", "mb-4")}>
         Список издательств
       </h1>
+      <div className={clsx("mb-4")}>
+        Поиск по наименованию:{" "}
+        <Input
+          type="text"
+          onChange={(e) => {
+            const sorted = [...publishers].sort(
+              (a, b) => b.Код_издательства - a.Код_издательства
+            );
+            if (e.target.value) {
+              setPublishersToDisplay(
+                sorted.filter((b) =>
+                  b.Наименование
+                    .toLocaleLowerCase()
+                    .includes(e.target.value.toLocaleLowerCase())
+                )
+              );
+            } else {
+              setPublishersToDisplay(sorted);
+            }
+          }}
+        />
+      </div>
       <table
         cellPadding="10"
         className={clsx(
@@ -45,21 +75,19 @@ export default function PublishersPage() {
           </tr>
         </thead>
         <tbody>
-          {[...publishers]
-            .sort((a, b) => b.Код_издательства - a.Код_издательства)
-            .map((publisher) => (
-              <tr key={publisher.Код_издательства}>
-                <td>{publisher.Код_издательства}</td>
-                <td>{publisher.Наименование}</td>
-                <td>{publisher.Город}</td>
-                <td>
-                  <DeletePublisherButton
-                    id={publisher.Код_издательства.toString()}
-                    cb={refresh}
-                  />
-                </td>
-              </tr>
-            ))}
+          {publishersToDisplay.map((publisher) => (
+            <tr key={publisher.Код_издательства}>
+              <td>{publisher.Код_издательства}</td>
+              <td>{publisher.Наименование}</td>
+              <td>{publisher.Город}</td>
+              <td>
+                <DeletePublisherButton
+                  id={publisher.Код_издательства.toString()}
+                  cb={refresh}
+                />
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </main>

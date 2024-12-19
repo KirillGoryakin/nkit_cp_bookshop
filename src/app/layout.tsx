@@ -27,6 +27,7 @@ export default function RootLayout({
             <HeaderLink href="/orders">Заказы</HeaderLink>
           </div>
           <div className={clsx("flex", "gap-2", 'mt-2')}>
+            <HeaderLink href="/orders/list">Список Заказов</HeaderLink>
             <HeaderLink href="/orders/reports">Отчёт по Продажам</HeaderLink>
           </div>
         </header>

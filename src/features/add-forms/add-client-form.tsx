@@ -1,9 +1,9 @@
 "use client";
 
 import { ChangeEvent, FormEvent, useState } from "react";
-import { addClient } from '@/server-actions/add-client';
-import { Button, Input } from '@/components/form';
-import clsx from 'clsx';
+import { addClient } from "@/server-actions/add-client";
+import { Button, Input } from "@/components/form";
+import clsx from "clsx";
 
 export function AddClientForm({
   className,
@@ -37,7 +37,19 @@ export function AddClientForm({
       {message && (
         <p className={clsx("mb-4", "text-red-600", "font-bold")}>{message}</p>
       )}
-      <form onSubmit={handleSubmit}>
+      <form
+        onSubmit={handleSubmit}
+        className={clsx(
+          "w-max",
+          "py-4",
+          "pr-4",
+          "border-y",
+          "border-r",
+          "border-zinc-400",
+          "[&_label]:block",
+          "[&_label]:my-2"
+        )}
+      >
         <div>
           <label>
             ФИО:

@@ -1,8 +1,8 @@
 "use client";
 
-import { Button, Input } from '@/components/form';
-import { addPublisher } from '@/server-actions/add-publisher';
-import clsx from 'clsx';
+import { Button, Input } from "@/components/form";
+import { addPublisher } from "@/server-actions/add-publisher";
+import clsx from "clsx";
 import { FormEvent, useState } from "react";
 
 export function AddPublisherForm({
@@ -32,7 +32,19 @@ export function AddPublisherForm({
     <div className={clsx(className)}>
       <h1>Добавить издательство</h1>
       {message && <p>{message}</p>}
-      <form onSubmit={handleSubmit}>
+      <form
+        onSubmit={handleSubmit}
+        className={clsx(
+          "w-max",
+          "py-4",
+          "pr-4",
+          "border-y",
+          "border-r",
+          "border-zinc-400",
+          "[&_label]:block",
+          "[&_label]:my-2"
+        )}
+      >
         <div>
           <label>
             Наименование:

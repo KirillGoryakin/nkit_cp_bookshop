@@ -33,7 +33,9 @@ export function AddBookForm({
 
   const [message, setMessage] = useState("");
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setForm({ ...form, [name]: value });
   };
@@ -67,7 +69,19 @@ export function AddBookForm({
       {message && (
         <p className={clsx("mb-4", "text-red-600", "font-bold")}>{message}</p>
       )}
-      <form onSubmit={handleSubmit}>
+      <form
+        onSubmit={handleSubmit}
+        className={clsx(
+          'w-max',
+          'py-4',
+          'pr-4',
+          "border-y",
+          'border-r',
+          "border-zinc-400",
+          "[&_label]:block",
+          "[&_label]:my-2"
+        )}
+      >
         <div>
           <label>
             Наименование:

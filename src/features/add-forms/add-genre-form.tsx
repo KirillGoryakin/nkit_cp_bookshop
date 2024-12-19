@@ -1,8 +1,8 @@
 "use client";
 
-import { Button, Input } from '@/components/form';
-import { addGenre } from '@/server-actions/add-genre';
-import clsx from 'clsx';
+import { Button, Input } from "@/components/form";
+import { addGenre } from "@/server-actions/add-genre";
+import clsx from "clsx";
 import { FormEvent, useState } from "react";
 
 export function AddGenreForm({
@@ -32,7 +32,19 @@ export function AddGenreForm({
       {message && (
         <p className={clsx("mb-4", "text-red-600", "font-bold")}>{message}</p>
       )}
-      <form onSubmit={handleSubmit}>
+      <form
+        onSubmit={handleSubmit}
+        className={clsx(
+          "w-max",
+          "py-4",
+          "pr-4",
+          "border-y",
+          "border-r",
+          "border-zinc-400",
+          "[&_label]:block",
+          "[&_label]:my-2"
+        )}
+      >
         <div>
           <label>
             Наименование:

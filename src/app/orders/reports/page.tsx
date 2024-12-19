@@ -1,17 +1,17 @@
 "use client";
 
-import { Input } from '@/components/form';
+import { Input } from "@/components/form";
 import {
   getSalesReport,
   ReportResult,
 } from "@/server-actions/get-sales-report";
 import clsx from "clsx";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 export default function SalesReportPage() {
   const [report, setReport] = useState<ReportResult[]>([]);
-  const [start, setStart] = useState(new Date().toISOString().split('T')[0]);
-  const [end, setEnd] = useState(new Date().toISOString().split('T')[0]);
+  const [start, setStart] = useState(new Date().toISOString().split("T")[0]);
+  const [end, setEnd] = useState(new Date().toISOString().split("T")[0]);
   useEffect(() => {
     getSalesReport({ start, end }).then(setReport);
   }, [start, end]);
@@ -38,6 +38,14 @@ export default function SalesReportPage() {
             onChange={(e) => setEnd(e.target.value)}
           />
         </label>
+        <div className={clsx("mt-4")}>
+          Итог за период:{" "}
+          {useMemo(
+            () => report.reduce((sum, i) => sum + +i.Общая_выручка, 0),
+            [report]
+          )}{" "}
+          ₽
+        </div>
       </div>
       <table
         cellPadding="10"

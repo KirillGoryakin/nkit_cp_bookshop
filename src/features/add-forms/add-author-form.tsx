@@ -5,7 +5,13 @@ import { addAuthor } from "@/server-actions/add-author";
 import clsx from "clsx";
 import { FormEvent, useState } from "react";
 
-export function AddAuthorForm({ className, cb }: { className?: string; cb?: () => void | Promise<void> }) {
+export function AddAuthorForm({
+  className,
+  cb,
+}: {
+  className?: string;
+  cb?: () => void | Promise<void>;
+}) {
   const [ФИО, setФИО] = useState("");
   const [message, setMessage] = useState("");
 
@@ -26,7 +32,19 @@ export function AddAuthorForm({ className, cb }: { className?: string; cb?: () =
       {message && (
         <p className={clsx("mb-4", "text-red-600", "font-bold")}>{message}</p>
       )}
-      <form onSubmit={handleSubmit}>
+      <form
+        onSubmit={handleSubmit}
+        className={clsx(
+          "w-max",
+          "py-4",
+          "pr-4",
+          "border-y",
+          "border-r",
+          "border-zinc-400",
+          "[&_label]:block",
+          "[&_label]:my-2"
+        )}
+      >
         <div>
           <label>
             ФИО:

@@ -6,7 +6,7 @@ import { BookResult, getBooks } from "@/server-actions/get-books";
 import { ClientResult } from "@/server-actions/get-client";
 import { ConsultantResult } from "@/server-actions/get-consultants";
 import clsx from "clsx";
-import { useState, useEffect, FormEvent } from "react";
+import { useState, useEffect, FormEvent, useCallback } from "react";
 
 export function AddOrderForm({
   clients,
@@ -24,14 +24,17 @@ export function AddOrderForm({
   });
   const [message, setMessage] = useState("");
 
-  useEffect(() => {
-    async function fetchBooks() {
-      const books = await getBooks();
-      setBooks(books);
-      setBooksToDisplay([...books].sort((a, b) => b.Код_книги - a.Код_книги));
-    }
-    fetchBooks();
+  const fetchBooks = useCallback(async () => {
+    const books = (await getBooks()).filter(
+      (book) => book.Количество_на_складе > 0
+    );
+    setBooks(books);
+    setBooksToDisplay([...books].sort((a, b) => b.Код_книги - a.Код_книги));
   }, []);
+
+  useEffect(() => {
+    fetchBooks();
+  }, [fetchBooks]);
 
   const handleAddBook = (bookId: string) => {
     const book = books.find((b) => b.Код_книги === +bookId);
@@ -43,11 +46,17 @@ export function AddOrderForm({
         ...prevOrder,
         Состав: prevOrder.Состав.map((item) =>
           item.Код_книги === bookId
-            ? { ...item, Количество: item.Количество + 1 }
+            ? {
+                ...item,
+                Количество: Math.min(
+                  item.Количество + 1,
+                  book.Количество_на_складе
+                ),
+              }
             : item
         ),
       }));
-    } else {
+    } else if (book.Количество_на_складе > 0) {
       setOrder((prevOrder) => ({
         ...prevOrder,
         Состав: [
@@ -61,10 +70,13 @@ export function AddOrderForm({
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
+    if (!order.Состав.length) return;
+
     const response = await createOrder(order);
     if (response.success) {
       setMessage("Заказ успешно создан!");
       setOrder({ Код_клиента: "", Код_продавца: "", Состав: [] });
+      fetchBooks();
     } else {
       setMessage(response.error || "Произошла ошибка при создании заказа");
     }
@@ -92,7 +104,7 @@ export function AddOrderForm({
             </Select>
           </label>
         </div>
-        <div>
+        <div className={clsx('mt-2')}>
           <label>
             Продавец:
             <Select
@@ -148,7 +160,7 @@ export function AddOrderForm({
           <thead>
             <tr>
               <th>Код книги</th>
-              <th>Наименование</th>
+              <th>Наименование книги</th>
               <th>Количество на складе</th>
               <th>Стоимость</th>
               <th>Действие</th>
@@ -166,7 +178,7 @@ export function AddOrderForm({
                     type="button"
                     onClick={() => handleAddBook(book.Код_книги.toString())}
                   >
-                    Добавить
+                    Добавить к заказу
                   </Button>
                 </td>
               </tr>
@@ -175,47 +187,51 @@ export function AddOrderForm({
         </table>
         <h2 className={clsx("text-xl", "font-bold", "mt-4")}>Состав заказа</h2>
         <ul className={clsx("list-disc", "pl-4", "py-4")}>
-          {order.Состав.map((item) => (
-            <li key={item.Код_книги}>
-              <b>
-                {
-                  books.find((b) => b.Код_книги === +item.Код_книги)
-                    ?.Наименование
-                }
-              </b>
-              , Количество:{" "}
-              <Input
-                type="number"
-                value={item.Количество}
-                min={1}
-                max={1000}
-                onChange={(e) =>
-                  setOrder((prevOrder) => ({
-                    ...prevOrder,
-                    Состав: prevOrder.Состав.map((i) =>
-                      i.Код_книги === item.Код_книги
-                        ? { ...i, Количество: +e.target.value }
-                        : i
-                    ),
-                  }))
-                }
-              />
-              , Сумма: {item.Количество * item.Стоимость} ₽
-              <Button
-                className={clsx("ml-4")}
-                onClick={() =>
-                  setOrder((prevOrder) => ({
-                    ...prevOrder,
-                    Состав: prevOrder.Состав.filter(
-                      (i) => i.Код_книги !== item.Код_книги
-                    ),
-                  }))
-                }
-              >
-                Удалить
-              </Button>
-            </li>
-          ))}
+          {order.Состав.map((item) => {
+            const book = books.find((b) => b.Код_книги === +item.Код_книги);
+            if (!book) return null;
+            return (
+              <li key={item.Код_книги}>
+                <b>{book.Наименование}</b>, Количество:{" "}
+                <Input
+                  type="number"
+                  value={item.Количество}
+                  min={1}
+                  max={book.Количество_на_складе}
+                  onChange={(e) =>
+                    setOrder((prevOrder) => ({
+                      ...prevOrder,
+                      Состав: prevOrder.Состав.map((i) =>
+                        i.Код_книги === item.Код_книги
+                          ? {
+                              ...i,
+                              Количество: Math.min(
+                                +e.target.value,
+                                book.Количество_на_складе
+                              ),
+                            }
+                          : i
+                      ),
+                    }))
+                  }
+                />
+                , Сумма: {item.Количество * item.Стоимость} ₽
+                <Button
+                  className={clsx("ml-4")}
+                  onClick={() =>
+                    setOrder((prevOrder) => ({
+                      ...prevOrder,
+                      Состав: prevOrder.Состав.filter(
+                        (i) => i.Код_книги !== item.Код_книги
+                      ),
+                    }))
+                  }
+                >
+                  Удалить
+                </Button>
+              </li>
+            );
+          })}
         </ul>
         <div>
           Итог:{" "}

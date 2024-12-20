@@ -26,7 +26,13 @@ export default function SalesReportPage() {
           <Input
             type="date"
             value={start}
-            onChange={(e) => setStart(e.target.value)}
+            onChange={(e) => {
+              if (
+                new Date(e.target.value).getTime() < new Date(end).getTime()
+              ) {
+                setStart(e.target.value);
+              }
+            }}
           />
         </label>
         <span> &mdash; </span>
@@ -35,7 +41,13 @@ export default function SalesReportPage() {
           <Input
             type="date"
             value={end}
-            onChange={(e) => setEnd(e.target.value)}
+            onChange={(e) => {
+              if (
+                new Date(e.target.value).getTime() > new Date(end).getTime()
+              ) {
+                setEnd(e.target.value);
+              }
+            }}
           />
         </label>
         <div className={clsx("mt-4")}>
